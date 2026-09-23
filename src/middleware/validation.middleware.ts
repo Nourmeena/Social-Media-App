@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 import { BadRequestException } from '../utils/responses/error.response'
-import type {ZodType,ZodError} from 'zod'
+import type { ZodType, ZodError } from 'zod'
+import {z} from 'zod'
 
 type KeyReqType = keyof Request
 type SchemaType = Partial<Record<KeyReqType, ZodType>>
@@ -39,3 +40,18 @@ export const validation = (schema: SchemaType) => {
         return next() as unknown as NextFunction
     }
 }
+
+export const generalFields = {
+  username: z
+    .string()
+    .min(2, {
+      error: "username must be at least 2 char",
+    })
+    .max(20),
+  email: z.email(),
+  password: z.string().regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+    message:
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+  }),
+  confirmPassword: z.string(),
+};
