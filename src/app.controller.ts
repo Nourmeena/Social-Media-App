@@ -12,6 +12,8 @@ import rateLimit from 'express-rate-limit'
 import authController from './modules/auth/auth.controller'
 import { globalErrorHandling } from "./utils/responses/error.response";
 
+import connectDB from './DB/connection.db'
+
 const limiter = rateLimit({
     windowMs: 60 * 60000,
     max: 2000,
@@ -19,13 +21,13 @@ const limiter = rateLimit({
     statusCode:429,
 })
 
-const bootstrap = (): void => {
+const bootstrap = async(): Promise<void> => {
     const app: Express = express()
     const port: number | string = process.env.PORT || 5000
     app.use(cors(), helmet(), limiter, express.json())
     
     app.use('/auth', authController)
-    
+    await connectDB()
     app.use(globalErrorHandling)
 
     app.get("/", (req: Request, res: Response) => {
