@@ -24,6 +24,13 @@ export class BadRequestException extends ApplicationException {
     }
 }
 
+export class ConflictException extends ApplicationException {
+  constructor(message: string, cause?: unknown) {
+    super(message, 409, cause);
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
 
 export const globalErrorHandling = (
     error: IError,

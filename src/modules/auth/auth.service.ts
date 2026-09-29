@@ -1,24 +1,31 @@
 import type { Request, Response } from "express";
 import { IUser, UserModel } from '../../DB/models/User.model'
 import type { IsignupBodyInputsDTO } from "./auth.dto"
-import {BadRequestException} from '../../utils/responses/error.response'
-import {DatabaseRepository} from '../../DB/repositories/database.repository'
+import { ConflictException } from "../../utils/responses/error.response";
+import {UserRepo} from '../../DB/repositories/user.repository'
 
 class AuthenticationService {
-  private userModel=new DatabaseRepository<IUser>(UserModel)
+  private userModel = new UserRepo(UserModel);
   constructor() {}
 
-  signup = async(req: Request, res: Response): Promise<Response> => {
-    let { username, email, password }: IsignupBodyInputsDTO = req.body
-    const [user] = (await this.userModel.create({data: [{ username, email, password }],options:{validateBeforeSave:true}}))||[]
-    if (!user) {
-      throw new BadRequestException('fail');
+  signup = async (req: Request, res: Response): Promise<Response> => {
+    let { username, email, password }: IsignupBodyInputsDTO = req.body;
+    const checkUserExist = await this.userModel.findOne({
+      filter: { email },
+      select: "email",
+      options: {
+        lean:true
+      }
+  
+    })
+    if (checkUserExist) {
+      throw new ConflictException("email exist");
     }
-    user.firstName = 'nourana'
-    user.save()
-    console.log({ username, email, password });
-    //throw new ApplicationException("fail", 400);
-    return res.status(201).json({ message: "Done", data: req.body });
+    const user = await this.userModel.createUser({
+        data: [{ username, email, password }],
+        options: { validateBeforeSave: true },
+      });
+    return res.status(201).json({ message: "Done", data: user });
   };
 
   login = (req: Request, res: Response): Response => {
