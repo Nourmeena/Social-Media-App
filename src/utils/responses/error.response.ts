@@ -24,6 +24,14 @@ export class BadRequestException extends ApplicationException {
     }
 }
 
+export class NotFoundException extends ApplicationException {
+  constructor(message: string, cause?: unknown) {
+    super(message, 404, cause);
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
 export class ConflictException extends ApplicationException {
   constructor(message: string, cause?: unknown) {
     super(message, 409, cause);

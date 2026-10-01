@@ -1,12 +1,14 @@
 import {
   CreateOptions,
   HydratedDocument,
+  UpdateWriteOpResult,
   Model,
   FlattenMaps,
   PopulateOptions,
   ProjectionType,
   QueryOptions,
   QueryFilter,
+  UpdateQuery,
 } from "mongoose";
 export type Lean<T>=HydratedDocument<FlattenMaps<T>>
 export abstract class DatabaseRepository<TDocument> {
@@ -40,5 +42,21 @@ export abstract class DatabaseRepository<TDocument> {
       data as any,
       options,
     )) as unknown as HydratedDocument<TDocument>[];
+  }
+
+  async updateOne({
+    filter,
+    update,
+    options,
+  }: {
+    filter?: QueryFilter<TDocument>;
+    update?: UpdateQuery<TDocument>;
+    options?: QueryOptions<TDocument> | null;
+  }): Promise<UpdateWriteOpResult> {
+    return this.model.updateOne(
+      (filter || {}) as any,
+      { ...update, $inc: { __v: 1 } },
+      options as any,
+    );
   }
 }

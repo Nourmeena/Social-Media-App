@@ -48,7 +48,8 @@ export const generalFields = {
       error: "username must be at least 2 char",
     })
     .max(20),
-  email: z.email(),
+    email: z.email(),
+  otp:z.string().regex(/^\d{6}$/),
   password: z.string().regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
     message:
       "Password must contain at least one uppercase letter, one lowercase letter, and one number",

@@ -5,7 +5,9 @@ import { Router } from 'express'
 
 const router = Router()
 
-router.post('/signup',validation(validators.signup), authService.signup)
+router.post('/signup', validation(validators.signup), authService.signup)
+router.patch("/confirmEmail", validation(validators.confirmEmail), authService.confirmEmail);
 router.post("/login", authService.login);
+
 
 export default router

@@ -19,6 +19,15 @@ export const login = {
     }),
 };
 
+export const confirmEmail = {
+  body: z
+    .strictObject({
+      otp:generalFields.otp,
+      email: generalFields.email,
+    })
+
+};
+
 export const signup = {
   body: login.body.extend({
     username: generalFields.username,
