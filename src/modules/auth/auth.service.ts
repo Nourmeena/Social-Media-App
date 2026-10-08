@@ -1,14 +1,15 @@
 import type { Request, Response } from "express";
-import { IUser, UserModel } from '../../DB/models/User.model'
+import { UserModel } from '../../DB/models/User.model'
 import type {
   IsignupBodyInputsDTO,
   IconfirmEmailBodyInputsDTO,
+  ILognInBodyInputsDTO,
 } from "./auth.dto";
 import { ConflictException,NotFoundException } from "../../utils/responses/error.response";
 import { UserRepo } from '../../DB/repositories/user.repository'
 import { generateHash,compareHash } from '../../utils/security/hash.security'
 import { emailEvent } from "../../utils/event/email.event";
-import {generateOTP} from '../../utils/otp'
+import { createLoginCredentials } from "../../utils/security/token.security";
 class AuthenticationService {
   private userModel = new UserRepo(UserModel);
   constructor() {}
@@ -62,8 +63,20 @@ class AuthenticationService {
     return res.json({ message: "Done", data: req.body });
   };
 
-  login = (req: Request, res: Response): Response => {
-    return res.json({ message: "Done", data: req.body });
+  login = async (req: Request, res: Response): Promise<Response> => {
+    const { email, password }: ILognInBodyInputsDTO = req.body
+    const user = await this.userModel.findOne({
+      filter:{email}
+    })
+    if (!user) {
+      throw new NotFoundException("invalid login info")
+    }
+    if (!(await compareHash(password, user.password))) {
+      throw new NotFoundException("invalid login info")
+    }
+    const credentials = await createLoginCredentials(user)
+
+    return res.json({ message: "Done", data: credentials});
   };
 }
 
