@@ -1,15 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 import { decodeToken } from "../utils/security/token.security";
 import { BadRequestException } from "../utils/responses/error.response";
-import { HUserDocument } from "../DB/models/User.model";
-import { JwtPayload } from "jsonwebtoken";
 
-interface IAuthReq extends Request {
-  user: HUserDocument;
-  decoded: JwtPayload;
-}
+
 export const authentication = () => {
-  return async (req: IAuthReq, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
       throw new BadRequestException("validation error", {
         key: "headers",

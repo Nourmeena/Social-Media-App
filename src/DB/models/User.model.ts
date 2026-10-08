@@ -1,4 +1,4 @@
-import { model, models, Types, Schema, HydratedDocument } from "mongoose";
+import { model, models,Schema, HydratedDocument } from "mongoose";
 
 
 export enum GenderEnum {

@@ -95,7 +95,7 @@ export const decodeToken = async ({ authorization, tokenType = TokenEnum.access 
   const signature = await getSignature(bearerKey as SignatureLevelEnum);
 
   const decoded = await verifyToken({ token, secret: tokenType === TokenEnum.refresh ? signature.refresh_signature : signature.access_signature });
-  if (!decoded ?. _id || !decoded?. _iat) {
+  if (!decoded ?. _id || !decoded?.iat) {
     throw new BadRequestException("invalid token payload")
   }
 
